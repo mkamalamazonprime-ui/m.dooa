@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مسابقة البطل الذكي 🌟 - يعجبني أم لا يعجبني</title>
+    <!-- تحميل خط Cairo المناسب للأطفال والواضح جداً -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <!-- تحميل Tailwind CSS للتصميم المتجاوب -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* إعدادات الخطوط والألوان والأنيميشن المخصصة للأطفال */
+        * {
+            font-family: 'Cairo', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f2fe 0%, #fef9c3 50%, #fce7f3 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* تأثيرات الأزرار ثلاثية الأبعاد الممتعة للأطفال */
+        .btn-3d {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+        }
+
+        .btn-green {
+            background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+            box-shadow: 0 7px 0 #15803d;
+        }
+        .btn-green:active {
+            transform: translateY(5px);
+            box-shadow: 0 2px 0 #15803d;
+        }
+
+        .btn-red {
+            background: linear-gradient(180deg, #fb7185 0%, #f43f5e 100%);
+            box-shadow: 0 7px 0 #be123c;
+        }
+        .btn-red:active {
+            transform: translateY(5px);
+            box-shadow: 0 2px 0 #be123c;
+        }
+
+        .btn-primary {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            box-shadow: 0 7px 0 #0369a1;
+        }
+        .btn-primary:active {
+            transform: translateY(5px);
+            box-shadow: 0 2px 0 #0369a1;
+        }
+
+        /* حركات تفاعلية */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            70% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .animate-shake {
+            animation: shake 0.45s ease-in-out;
+        }
+
+        /* كانفاس قصاصات الاحتفال */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-3 sm:p-6">
+
+    <!-- كانفاس الاحتفالات والنجوم المتطايرة -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- شريط علوي للتحكم بالصوت -->
+    <header class="w-full max-w-lg flex justify-between items-center mb-3 px-1">
+        <div class="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm border border-sky-100">
+            <span class="text-xl">🏫</span>
+            <span class="text-sm sm:text-base font-bold text-sky-800">روضة الأبطال - KG2</span>
+        </div>
+        <button id="sound-toggle" onclick="toggleMute()" class="bg-white/90 hover:bg-white text-sky-700 font-bold px-3.5 py-2 rounded-full shadow-md border-2 border-sky-200 flex items-center gap-1.5 text-sm sm:text-base transition active:scale-95" aria-label="كتم أو تشغيل الصوت">
+            <span id="sound-icon" class="text-xl">🔊</span>
+            <span id="sound-label">الصوت يعمل</span>
+        </button>
+    </header>
+
+    <!-- الحاوية الرئيسية للتطبيق -->
+    <main class="w-full max-w-lg bg-white rounded-3xl shadow-xl border-4 border-sky-200 overflow-hidden relative">
+
+        <!-- 1. شاشة البداية (Start Screen) -->
+        <section id="start-screen" class="p-6 sm:p-8 text-center flex flex-col items-center animate-pop">
+            <div class="flex justify-center gap-3 text-5xl sm:text-6xl mb-4 animate-float">
+                <span>🌟</span>
+                <span>👧🏻</span>
+                <span>👦🏻</span>
+                <span>🏆</span>
+            </div>
+
+            <h1 class="text-2xl sm:text-3xl font-black text-sky-900 leading-snug mb-2">
+                مسابقة البطل الذكي
+            </h1>
+            <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-900 font-extrabold px-4 py-1.5 rounded-full text-base sm:text-lg mb-5 border-2 border-amber-300">
+                <span>سلوكيات: يعجبني 👍</span>
+                <span>أم</span>
+                <span>لا يعجبني 👎</span>
+            </div>
+
+            <p class="text-gray-600 font-semibold text-base sm:text-lg mb-6 leading-relaxed">
+                أهلاً بكم يا أبطال! استمعوا لكل موقف واختاروا هل هو تصرف صحيح <span class="text-green-600 font-bold">(يعجبني)</span> أم خاطئ <span class="text-rose-600 font-bold">(لا يعجبني)</span>.
+            </p>
+
+            <!-- حقل إدخال اسم الطفل لطباعته في الشهادة -->
+            <div class="w-full mb-6 text-right">
+                <label for="child-name" class="block text-sky-900 font-bold text-base sm:text-lg mb-2 pr-1">
+                    ✏️ اكتب اسم البطل أو البطلة (اختياري):
+                </label>
+                <input type="text" id="child-name" maxlength="25" placeholder="مثال: سارة / أحمد..." 
+                    class="w-full text-center text-lg sm:text-xl font-bold text-sky-950 bg-sky-50 border-3 border-sky-300 focus:border-sky-500 focus:bg-white rounded-2xl py-3.5 px-4 outline-none transition shadow-inner">
+            </div>
+
+            <button onclick="startQuiz()" class="w-full btn-primary text-white font-black text-xl sm:text-2xl py-4 px-6 rounded-2xl flex items-center justify-center gap-3 cursor-pointer">
+                <span>ابدأ المسابقة الآن</span>
+                <span class="text-2xl sm:text-3xl">🚀</span>
+            </button>
+        </section>
+
+        <!-- 2. شاشة الأسئلة التفاعلية (Quiz Screen) -->
+        <section id="quiz-screen" class="hidden p-5 sm:p-7 flex flex-col">
+            <!-- شريط التقدم والنجوم -->
+            <div class="mb-4">
+                <div class="flex justify-between items-center text-sm sm:text-base font-extrabold text-sky-900 mb-1.5">
+                    <span id="question-counter" class="bg-sky-100 px-3 py-1 rounded-full">الموقف 1 من 10</span>
+                    <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full flex items-center gap-1">
+                        <span>النجوم:</span>
+                        <span id="score-display" class="text-lg">0</span>
+                        <span>⭐</span>
+                    </span>
+                </div>
+                <div class="w-full bg-gray-100 h-4 rounded-full overflow-hidden border border-gray-200 p-0.5">
+                    <div id="progress-bar" class="bg-gradient-to-l from-amber-400 to-green-400 h-full rounded-full transition-all duration-500" style="width: 10%;"></div>
+                </div>
+            </div>
+
+            <!-- بطاقة الموقف المصور -->
+            <div id="question-card" class="bg-gradient-to-b from-sky-50 to-indigo-50/60 border-3 border-sky-200 rounded-3xl p-5 sm:p-6 text-center mb-5 shadow-sm relative">
+                <!-- زر قراءة السؤال صوتياً للأطفال -->
+                <button onclick="speakCurrentQuestion()" id="speak-btn" class="mx-auto mb-3 bg-amber-400 hover:bg-amber-500 text-amber-950 font-extrabold px-4 py-2 rounded-full shadow-md flex items-center gap-2 text-sm sm:text-base transition active:scale-95 cursor-pointer">
+                    <span class="text-xl">🗣️</span>
+                    <span>اسمع الموقف</span>
+                </button>
+
+                <!-- الإيموجي التعبيري الكبير للموقف -->
+                <div id="scenario-emoji" class="text-6xl sm:text-7xl my-3 animate-float select-none">
+                    🧼👐
+                </div>
+
+                <!-- نص الموقف بخط كبير وواضح -->
+                <h2 id="scenario-text" class="text-xl sm:text-2xl font-extrabold text-gray-800 leading-relaxed mt-2">
+                    سارة تغسل يديها بالماء والصابون قبل الأكل وبعده.
+                </h2>
+            </div>
+
+            <!-- أزرار الاختيار الكبيرة للأطفال -->
+            <div id="answer-buttons" class="grid grid-cols-2 gap-3 sm:gap-4">
+                <button onclick="checkAnswer(true)" class="btn-green text-white rounded-3xl py-5 px-3 flex flex-col items-center justify-center gap-1 cursor-pointer">
+                    <span class="text-4xl sm:text-5xl mb-1">👍</span>
+                    <span class="text-xl sm:text-2xl font-black">يعجبني</span>
+                </button>
+
+                <button onclick="checkAnswer(false)" class="btn-red text-white rounded-3xl py-5 px-3 flex flex-col items-center justify-center gap-1 cursor-pointer">
+                    <span class="text-4xl sm:text-5xl mb-1">👎</span>
+                    <span class="text-xl sm:text-2xl font-black">لا يعجبني</span>
+                </button>
+            </div>
+
+            <!-- صندوق التغذية الراجعة التفاعلي (يظهر بعد الإجابة) -->
+            <div id="feedback-box" class="hidden mt-4 rounded-3xl p-5 text-center animate-pop border-3">
+                <div id="feedback-icon" class="text-5xl mb-2">🌟</div>
+                <h3 id="feedback-title" class="text-xl sm:text-2xl font-black mb-1">أحسنت يا بطل!</h3>
+                <p id="feedback-explanation" class="text-base sm:text-lg font-bold mb-4 leading-snug"></p>
+                
+                <button id="next-btn" onclick="nextQuestion()" class="w-full btn-primary text-white font-black text-lg sm:text-xl py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 cursor-pointer">
+                    <span id="next-btn-text">الموقف التالي</span>
+                    <span class="text-2xl">⬅️</span>
+                </button>
+
+                <button id="retry-btn" onclick="hideFeedbackForRetry()" class="hidden w-full bg-amber-400 hover:bg-amber-500 text-amber-950 font-black text-lg sm:text-xl py-3.5 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                    <span>أحاول مرة أخرى</span>
+                    <span class="text-2xl">🔄</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. شاشة النهاية وشهادة التقدير (Final Celebration Screen) -->
+        <section id="end-screen" class="hidden p-6 sm:p-8 text-center flex flex-col items-center animate-pop">
+            <!-- إطار شهادة التقدير -->
+            <div class="w-full bg-gradient-to-b from-amber-50 via-yellow-50 to-white border-4 border-amber-400 rounded-3xl p-5 sm:p-6 shadow-md mb-6 relative">
+                <div class="text-5xl sm:text-6xl mb-2 animate-float">🏆</div>
+                <div class="inline-block bg-amber-400 text-amber-950 font-black text-sm sm:text-base px-4 py-1 rounded-full mb-2">
+                    شهادة بطل السلوكيات الجميلة
+                </div>
+                
+                <h2 id="certificate-name" class="text-2xl sm:text-3xl font-black text-sky-900 my-2">
+                    البطل الذكي
+                </h2>
+
+                <p class="text-gray-700 font-bold text-base sm:text-lg mb-3">
+                    أتمّ مسابقة (يعجبني 👍 ولا يعجبني 👎) بنجاح رائع!
+                </p>
+
+                <!-- عرض النجوم المكتسبة -->
+                <div class="bg-white border-2 border-amber-200 rounded-2xl py-3 px-4 inline-flex flex-col items-center shadow-sm">
+                    <span class="text-sm font-bold text-gray-500 mb-1">النتيجة النهائية</span>
+                    <div class="text-3xl sm:text-4xl font-black text-amber-500 flex items-center gap-2">
+                        <span id="final-score">10</span>
+                        <span class="text-gray-400 text-2xl">/</span>
+                        <span>10</span>
+                        <span>⭐</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أزرار المشاركة وإعادة اللعب -->
+            <div class="w-full flex flex-col gap-3">
+                <button onclick="shareResultWithTeacher()" class="w-full btn-green text-white font-black text-lg sm:text-xl py-4 px-5 rounded-2xl flex items-center justify-center gap-2 cursor-pointer">
+                    <span class="text-2xl">📤</span>
+                    <span>نسخ النتيجة لإرسالها للمعلمة</span>
+                </button>
+
+                <!-- رسالة تأكيد النسخ -->
+                <div id="copy-toast" class="hidden bg-sky-100 text-sky-900 border border-sky-300 font-bold text-sm py-2.5 px-4 rounded-xl animate-pop">
+                    ✅ تم نسخ النتيجة! يمكنك الآن لصقها وإرسالها للمعلمة في الواتساب.
+                </div>
+
+                <button onclick="restartQuiz()" class="w-full bg-sky-100 hover:bg-sky-200 text-sky-900 font-extrabold text-base sm:text-lg py-3.5 px-5 rounded-2xl flex items-center justify-center gap-2 transition cursor-pointer">
+                    <span>العب المسابقة مرة أخرى</span>
+                    <span class="text-xl">🔄</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- تذييل بسيط -->
+    <footer class="mt-4 text-center text-sky-900/70 text-xs sm:text-sm font-bold">
+        صُمّم بحب لأطفال KG2 وأولياء الأمور ❤️
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. بيانات الأسئلة والمواقف التربوية لـ KG2
+        // ==========================================
+        const quizData = [
+            {
+                text: "سارة تغسل يديها بالماء والصابون قبل الأكل وبعده.",
+                emoji: "🧼👐",
+                isGood: true,
+                goodFeedback: "رائع! غسل اليدين بالماء والصابون يحمينا من الجراثيم ويجعلنا أصحاء.",
+                badHint: "فكر يا بطل! هل غسل اليدين بالماء والصابون يحافظ على نظافتنا وصحتنا؟"
+            },
+            {
+                text: "أحمد يرمي أوراق المناديل على الأرض بدلاً من سلة المهملات.",
+                emoji: "🗑️🧻",
+                isGood: false,
+                goodFeedback: "أحسنت! هذا تصرف لا يعجبنا، يجب أن نرمي المهملات في السلة المخصصة لها.",
+                badHint: "انتبه يا بطل! هل رمي الأوراق على الأرض يجعل فصلنا نظيفاً أم متسخاً؟"
+            },
+            {
+                text: "ليلى ترفع يدها بهدوء وتستأذن قبل أن تتكلم في الفصل.",
+                emoji: "🙋‍♀️✨",
+                isGood: true,
+                goodFeedback: "ممتاز! رفع اليد والاستئذان يدل على الأدب واحترام المعلمة والأصدقاء.",
+                badHint: "تذكر قوانين الفصل! عندما نريد أن نتكلم، هل نرفع أيدينا بهدوء؟"
+            },
+            {
+                text: "عمر يشارك ألعابه وألوانه مع أصدقائه بكل حب.",
+                emoji: "🧸🖍️",
+                isGood: true,
+                goodFeedback: "رائع جداً! المشاركة تجعلنا سعداء وتزيد المحبة بين الأصدقاء.",
+                badHint: "فكر مرة أخرى! هل مشاركة الألعاب مع أصدقائنا تصرف جميل؟"
+            },
+            {
+                text: "كريم يدفع أصدقاءه في الطابور ليقف في المقدمة.",
+                emoji: "🚶‍♂️💥",
+                isGood: false,
+                goodFeedback: "صحيح! هذا تصرف لا يعجبنا، فنحن ننتظر دورنا في الطابور بنظام ولا نؤذي أحداً.",
+                badHint: "انتبه يا بطل! هل دفع الأصدقاء في الطابور تصرف آمن ولطيف؟"
+            },
+            {
+                text: "مريم ترسم وتلون على جدار الفصل والطاولة.",
+                emoji: "🖍️🧱",
+                isGood: false,
+                goodFeedback: "أحسنت! هذا تصرف لا يعجبنا، فنحن نرسم في الدفتر ونحافظ على نظافة الجدران.",
+                badHint: "فكر يا بطل! أين يجب أن نرسم ونلون؟ على الورقة أم على الجدار؟"
+            },
+            {
+                text: "يوسف يأكل فطوره الصحي (الفواكه والسندويتش) في الاستراحة.",
+                emoji: "🍎🥪",
+                isGood: true,
+                goodFeedback: "ممتاز! الطعام الصحي يقوي أجسامنا وعقولنا لنكبر ونصبح أبطالاً.",
+                badHint: "فكر يا بطل! هل أكل الفواكه والطعام الصحي مفيد لجسمنا؟"
+            },
+            {
+                text: "خالد يتحدث بصوت عالٍ ولا ينتبه عندما تشرح المعلمة.",
+                emoji: "🗣️🙉",
+                isGood: false,
+                goodFeedback: "صحيح! هذا لا يعجبنا، يجب أن نستمع باهتمام للمعلمة لنفهم الدرس.",
+                badHint: "تذكر يا بطل! عندما تشرح المعلمة الدرس، هل نتحدث أم نستمع بهدوء؟"
+            },
+            {
+                text: "جنى ترتب الألعاب والمكعبات في مكانها بعد الانتهاء من اللعب.",
+                emoji: "🧩📦",
+                isGood: true,
+                goodFeedback: "رائع! إعادة الألعاب إلى مكانها يحافظ عليها ويجعل المكان مرتباً وجميلاً.",
+                badHint: "فكر مرة أخرى! هل ترتيب الألعاب بعد اللعب تصرف جميل ومنظم؟"
+            },
+            {
+                text: "طارق يساعد صديقه الذي وقع على الأرض ويطمئن عليه.",
+                emoji: "🤝❤️",
+                isGood: true,
+                goodFeedback: "أنت بطل حقيقي! مساعدة الأصدقاء والرفق بهم من أجمل الأخلاق.",
+                badHint: "فكر بقلبك الطيب! هل مساعدة صديقنا عندما يقع تصرف صحيح؟"
+            }
+        ];
+
+        // ==========================================
+        // 2. متغيرات حالة اللعبة
+        // ==========================================
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let hasTriedCurrent = false; // لتتبع هل أخطأ الطفل في المحاولة الأولى أم أجاب صح من أول مرة
+        let childName = "";
+        let isMuted = false;
+
+        // ==========================================
+        // 3. نظام المؤثرات الصوتية (Web Audio API) وقراءة النص (TTS)
+        // ==========================================
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    audioCtx = new AudioContext();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(520, now);
+                    osc.frequency.exponentialRampToValueAtTime(780, now + 0.08);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.09);
+                } 
+                else if (type === 'correct') {
+                    // لحن تشجيعي مبهج (دو - مي - صول - دو العالية)
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                        gain.gain.setValueAtTime(0.22, now + idx * 0.1);
+                        gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.25);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.1);
+                        osc.stop(now + idx * 0.1 + 0.26);
+                    });
+                } 
+                else if (type === 'wrong') {
+                    // صوت لطيف للتنبيه دون إخافة الطفل
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(320, now);
+                    osc.frequency.linearRampToValueAtTime(240, now + 0.28);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.31);
+                } 
+                else if (type === 'fanfare') {
+                    // موسيقى الفوز النهائية
+                    const melody = [
+                        { f: 523.25, t: 0, d: 0.15 },
+                        { f: 659.25, t: 0.15, d: 0.15 },
+                        { f: 783.99, t: 0.3, d: 0.15 },
+                        { f: 1046.50, t: 0.45, d: 0.35 },
+                        { f: 783.99, t: 0.85, d: 0.15 },
+                        { f: 1046.50, t: 1.05, d: 0.5 }
+                    ];
+                    melody.forEach(n => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(n.f, now + n.t);
+                        gain.gain.setValueAtTime(0.25, now + n.t);
+                        gain.gain.exponentialRampToValueAtTime(0.01, now + n.t + n.d);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + n.t);
+                        osc.stop(now + n.t + n.d + 0.02);
+                    });
+                }
+            } catch (e) {
+                console.warn("Audio playback skipped:", e);
+            }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const icon = document.getElementById('sound-icon');
+            const label = document.getElementById('sound-label');
+            if (isMuted) {
+                icon.textContent = '🔇';
+                label.textContent = 'الصوت مكتوم';
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+            } else {
+                icon.textContent = '🔊';
+                label.textContent = 'الصوت يعمل';
+                playSound('click');
+            }
+        }
+
+        // قراءة النص بالعربية للأطفال الذين لا يجيدون القراءة بعد
+        function speakText(textToRead) {
+            if (isMuted) return;
+            try {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(textToRead);
+                    utterance.lang = 'ar-SA';
+                    utterance.rate = 0.88; // سرعة هادئة وواضحة للأطفال
+                    utterance.pitch = 1.1;
+                    window.speechSynthesis.speak(utterance);
+                }
+            } catch (e) {
+                console.warn("Speech synthesis unavailable:", e);
+            }
+        }
+
+        function speakCurrentQuestion() {
+            playSound('click');
+            const current = quizData[currentQuestionIndex];
+            speakText(current.text + " ... هل هذا السلوك يعجبني أم لا يعجبني؟");
+        }
+
+        // ==========================================
+        // 4. منطق سير المسابقة
+        // ==========================================
+        function startQuiz() {
+            initAudio();
+            playSound('click');
+
+            const inputName = document.getElementById('child-name').value.trim();
+            childName = inputName ? inputName : "البطل الذكي";
+
+            currentQuestionIndex = 0;
+            score = 0;
+            updateScoreUI();
+
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('end-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            hasTriedCurrent = false;
+            const current = quizData[currentQuestionIndex];
+
+            // تحديث العداد وشريط التقدم
+            document.getElementById('question-counter').textContent = `الموقف ${currentQuestionIndex + 1} من ${quizData.length}`;
+            const progressPercent = ((currentQuestionIndex + 1) / quizData.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            // تحديث محتوى البطاقة
+            const card = document.getElementById('question-card');
+            card.classList.remove('animate-pop');
+            void card.offsetWidth; // إعادة تفعيل الأنيميشن
+            card.classList.add('animate-pop');
+
+            document.getElementById('scenario-emoji').textContent = current.emoji;
+            document.getElementById('scenario-text').textContent = current.text;
+
+            // إظهار أزرار الإجابة وإخفاء التغذية الراجعة
+            document.getElementById('answer-buttons').classList.remove('hidden');
+            document.getElementById('feedback-box').classList.add('hidden');
+
+            // قراءة السؤال تلقائياً بلطف بعد لحظة قصيرة
+            setTimeout(() => {
+                speakText(current.text);
+            }, 350);
+        }
+
+        function checkAnswer(userChoseGood) {
+            const current = quizData[currentQuestionIndex];
+            const isCorrect = (userChoseGood === current.isGood);
+
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackExp = document.getElementById('feedback-explanation');
+            const nextBtn = document.getElementById('next-btn');
+            const retryBtn = document.getElementById('retry-btn');
+            const answerBtns = document.getElementById('answer-buttons');
+
+            answerBtns.classList.add('hidden');
+            feedbackBox.classList.remove('hidden', 'bg-green-50', 'border-green-400', 'text-green-900', 'bg-amber-50', 'border-amber-400', 'text-amber-950', 'animate-shake');
+
+            if (isCorrect) {
+                playSound('correct');
+                launchConfetti(35);
+
+                if (!hasTriedCurrent) {
+                    score++;
+                    updateScoreUI();
+                }
+
+                feedbackBox.classList.add('bg-green-50', 'border-green-400', 'text-green-900');
+                feedbackIcon.textContent = '🌟🎉';
+                feedbackTitle.textContent = `أحسنت يا ${childName}!`;
+                feedbackExp.textContent = current.goodFeedback;
+
+                nextBtn.classList.remove('hidden');
+                retryBtn.classList.add('hidden');
+
+                // تغيير نص زر التالي في السؤال الأخير
+                if (currentQuestionIndex === quizData.length - 1) {
+                    document.getElementById('next-btn-text').textContent = 'شاهد شهادة الفوز 🏆';
+                } else {
+                    document.getElementById('next-btn-text').textContent = 'الموقف التالي';
+                }
+
+                speakText(`أحسنت! ${current.goodFeedback}`);
+            } else {
+                hasTriedCurrent = true;
+                playSound('wrong');
+
+                feedbackBox.classList.add('bg-amber-50', 'border-amber-400', 'text-amber-950', 'animate-shake');
+                feedbackIcon.textContent = '🤔💡';
+                feedbackTitle.textContent = 'فكر مرة أخرى يا بطل!';
+                feedbackExp.textContent = current.badHint;
+
+                nextBtn.classList.add('hidden');
+                retryBtn.classList.remove('hidden');
+
+                speakText(`فكر مرة أخرى! ${current.badHint}`);
+            }
+        }
+
+        function hideFeedbackForRetry() {
+            playSound('click');
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('answer-buttons').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showFinalCelebration();
+            }
+        }
+
+        function updateScoreUI() {
+            document.getElementById('score-display').textContent = score;
+        }
+
+        // ==========================================
+        // 5. شاشة الاحتفال النهائية والمشاركة
+        // ==========================================
+        function showFinalCelebration() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('end-screen').classList.remove('hidden');
+            document.getElementById('copy-toast').classList.add('hidden');
+
+            document.getElementById('certificate-name').textContent = `البطل: ${childName} 🌟`;
+            document.getElementById('final-score').textContent = score;
+
+            playSound('fanfare');
+            launchConfetti(100);
+            speakText(`مبروك يا ${childName}! لقد أنهيت مسابقة السلوكيات وحصلت على ${score} من 10 نجوم!`);
+        }
+
+        function restartQuiz() {
+            playSound('click');
+            currentQuestionIndex = 0;
+            score = 0;
+            updateScoreUI();
+            document.getElementById('end-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function shareResultWithTeacher() {
+            playSound('click');
+            const message = `🌟 مسابقة السلوكيات (يعجبني 👍 / لا يعجبني 👎) - KG2 🌟\n` +
+                            `👦🏻 اسم الطفل: ${childName}\n` +
+                            `⭐ النتيجة: ${score} من ${quizData.length} نجوم\n` +
+                            `🏆 أتمّ المسابقة بنجاح وتعرف على السلوكيات الإيجابية!`;
+
+            // استخدام textarea مؤقتة لضمان عمل النسخ في جميع المتصفحات وتطبيقات الويب
+            const textArea = document.createElement("textarea");
+            textArea.value = message;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                const toast = document.getElementById('copy-toast');
+                toast.classList.remove('hidden');
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // ==========================================
+        // 6. تأثير قصاصات الاحتفال (Confetti Animation)
+        // ==========================================
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId = null;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function launchConfetti(count) {
+            const colors = ['#f43f5e', '#22c55e', '#38bdf8', '#facc15', '#a855f7', '#fb923c'];
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height * 0.4 - 50,
+                    size: Math.random() * 9 + 6,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speedY: Math.random() * 4 + 2.5,
+                    speedX: (Math.random() - 0.5) * 4,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 10
+                });
+            }
+            if (!animationId) {
+                animateConfetti();
+            }
+        }
+
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, index) => {
+                p.y += p.speedY;
+                p.x += p.speedX;
+                p.rotation += p.rotationSpeed;
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                ctx.restore();
+
+                if (p.y > canvas.height + 20) {
+                    particles.splice(index, 1);
+                }
+            });
+
+            if (particles.length > 0) {
+                animationId = requestAnimationFrame(animateConfetti);
+            } else {
+                animationId = null;
+            }
+        }
+    </script>
+</body>
+</html>
